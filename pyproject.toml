@@ -2,37 +2,22 @@
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-# ── Metadata ────────────────────────────────────────────────────
-
 [project]
 name = "agent-sdk"
 version = "0.1.0"
-description = "SDK para construção de agentes compatíveis com a Agent Platform. Contrato, tipos e template."
+description = "SDK para construção de agentes compatíveis com a Agent Platform."
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.11"
 authors = [{ name = "Seu Nome", email = "seu@email.com" }]
 keywords = ["agents", "sdk", "tools", "llm"]
-classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-]
-
-# ── Dependências de runtime ────────────────────────────────────
-# O SDK é leve de propósito. Agentes e plataforma importam ele.
 
 dependencies = ["pydantic>=2.7,<3.0"]
 
-# ── Dependências opcionais ─────────────────────────────────────
+# ── Grupos de desenvolvimento (PEP 735) ────────────────────────
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = ["pytest>=8.0", "pytest-cov>=5.0", "ruff>=0.5", "ipython>=8.0"]
-template = [
-    "jinja2>=3.1", # futuro: geração de boilerplate
-]
 
 # ── Scripts ────────────────────────────────────────────────────
 
