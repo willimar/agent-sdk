@@ -13,20 +13,19 @@ from typing import Any
 class ToolResult:
     """Resultado padronizado de uma ferramenta.
 
-    Toda ferramenta deve retornar um ToolResult ou uma string/dict
-    que será convertido automaticamente pelo registry.
-
     Attributes:
         sucesso: True se a ferramenta executou sem erros.
         dados: Resultado útil (string ou dicionário).
         erro: Mensagem de erro, se houver.
         duracao_ms: Tempo de execução em milissegundos.
+        retry: Se True, o erro é transitório e pode ser tentado de novo.
     """
 
     sucesso: bool
     dados: str | dict[str, Any]
     erro: str | None = None
     duracao_ms: float = 0.0
+    retry: bool = False
 
     @classmethod
     def ok(cls, dados: str | dict[str, Any], duracao_ms: float = 0.0) -> ToolResult:
@@ -34,9 +33,11 @@ class ToolResult:
         return cls(sucesso=True, dados=dados, duracao_ms=duracao_ms)
 
     @classmethod
-    def falha(cls, erro: str, duracao_ms: float = 0.0) -> ToolResult:
+    def falha(
+        cls, erro: str, duracao_ms: float = 0.0, retry: bool = False
+    ) -> ToolResult:
         """Cria um resultado de erro."""
-        return cls(sucesso=False, dados="", erro=erro, duracao_ms=duracao_ms)
+        return cls(sucesso=False, dados="", erro=erro, duracao_ms=duracao_ms, retry=retry)
 
     def to_prompt_text(self) -> str:
         """Converte o resultado em texto para injetar no prompt do LLM."""
@@ -45,15 +46,12 @@ class ToolResult:
                 import json
                 return json.dumps(self.dados, ensure_ascii=False, indent=2)
             return str(self.dados)
-        return f"ERRO: {self.erro}"
+        sufixo = " (pode tentar novamente)" if self.retry else " (nao tente novamente)"
+        return f"ERRO: {self.erro}{sufixo}"
 
 
 class ToolExecutionError(Exception):
     """Erro controlado durante execução de uma ferramenta.
-
-    A ferramenta deve lançar esta exceção quando encontra um erro
-    recuperável ou não-recuperável. O motor de execução decide se
-    faz retry com base no flag `retry`.
 
     Attributes:
         mensagem: Descrição do erro.
@@ -68,18 +66,7 @@ class ToolExecutionError(Exception):
 
 @dataclass
 class ToolSpec:
-    """Especificação de uma ferramenta registrada.
-
-    Contém todos os metadados necessários para o LLM decidir
-    quando e como usar a ferramenta.
-
-    Attributes:
-        nome: Identificador único da ferramenta.
-        descricao: Descrição curta (primeira linha da docstring).
-        descricao_completa: Docstring completa.
-        parametros: Schema dos parâmetros (nome → tipo/default).
-        funcao: Referência à função original.
-    """
+    """Especificação de uma ferramenta registrada."""
 
     nome: str
     descricao: str
