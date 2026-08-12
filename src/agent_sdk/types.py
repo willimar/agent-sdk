@@ -33,9 +33,7 @@ class ToolResult:
         return cls(sucesso=True, dados=dados, duracao_ms=duracao_ms)
 
     @classmethod
-    def falha(
-        cls, erro: str, duracao_ms: float = 0.0, retry: bool = False
-    ) -> ToolResult:
+    def falha(cls, erro: str, duracao_ms: float = 0.0, retry: bool = False) -> ToolResult:
         """Cria um resultado de erro."""
         return cls(sucesso=False, dados="", erro=erro, duracao_ms=duracao_ms, retry=retry)
 
@@ -44,6 +42,7 @@ class ToolResult:
         if self.sucesso:
             if isinstance(self.dados, dict):
                 import json
+
                 return json.dumps(self.dados, ensure_ascii=False, indent=2)
             return str(self.dados)
         sufixo = " (pode tentar novamente)" if self.retry else " (nao tente novamente)"

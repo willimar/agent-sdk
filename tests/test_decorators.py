@@ -59,6 +59,7 @@ class TestToolDecorator:
             pass
 
         with pytest.raises(ValueError, match="já está registrada"):
+
             @tool("duplicada")
             def segunda():
                 """Segunda."""
@@ -66,6 +67,7 @@ class TestToolDecorator:
 
     def test_nome_com_espaco_lanca_erro(self):
         with pytest.raises(ValueError, match="não pode conter espaços"):
+
             @tool("nome invalido")
             def funcao():
                 """Teste."""
@@ -73,6 +75,7 @@ class TestToolDecorator:
 
     def test_nome_vazio_lanca_erro(self):
         with pytest.raises(ValueError, match="não pode ser vazio"):
+
             @tool("")
             def funcao():
                 """Teste."""
